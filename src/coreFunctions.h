@@ -1,8 +1,10 @@
 #include <unistd.h>
 #include <string.h>
+#include <stdbool.h>
+#include <stdio.h>
 
-int delayDefault = 40000;
-int postDelayDefault = 500000;
+int delayDefault = 40000; // 40000
+int postDelayDefault = 100000;
 
 int strLen(char string[]){
 	int counter;
@@ -23,6 +25,11 @@ void escreveBonitinho(char string[], int time, int postDelay, bool jumpLine){
 	}
 	usleep(postDelay);
 	if (jumpLine) { printf("\n"); }
-	
 
 }
+
+void flush_in(){ 
+    int ch;
+    while( (ch = fgetc(stdin)) != EOF && ch != '\n' ){} 
+}
+

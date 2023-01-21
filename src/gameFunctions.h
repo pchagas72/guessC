@@ -2,6 +2,8 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include "./coreFunctions.h"
+#include <ctype.h>
+#include <time.h>
 
 void printChave() {
 	for (int i = 0; i < 500; i++){
@@ -26,10 +28,14 @@ void printChave() {
 
 int pedeChute(){
 	printf("\n");
-	int chute;
+	int chute = -1;
 	char pedeChuteMsg[256] = "Chute um número: ";
+	char vsfdMsg[256] = "Entenda meu amigo, o seu chute tem que ser um NÚMERO POSITIVO entre 0 e o LIMITE. Okay? Sem dúvidas? Vamos prosseguir.";
 	escreveBonitinho(pedeChuteMsg, delayDefault, 0, false);
 	scanf("%d", &chute);
+	if (chute < 0) {
+		escreveBonitinho(vsfdMsg, delayDefault, postDelayDefault, false);
+	}
 	return chute;
 }
 
@@ -54,41 +60,62 @@ bool comparaChute(int chute, int numeroSecreto) {
 }
 
 int perguntaTentativa(bool jaTeFalei) {
-	int tentativas;
+	int tentativas = 0;
 	char tentativasMsg[256] = "Quantas tentativas você quer ter? ";
-	char poucasTent[256] = "Só isso? Você deve ser muito bom mesmo. Vamos lá!";
+	char poucasTent[256] = "Só isso? Você deve ser muito bom mesmo!";
 	char medioTent[256] = "Um número bom, dificuldade média eu diria! Vamos a isto.";
+	char naoEhDigito[256] = "Você realmente tá me confundindo agora... Tenta denovo e pelo amor põe um NÚMERO POSITIVO menor que 10...";
 	char muitasTent[256];
 	if (jaTeFalei == false){
-		char muitasTent[256] = "Pff, esse número de tentativas já é ridículo não acha? Escolha menos de 10.";
+		char muitasTent[256] = "Pff, esse número de tentativas já é ridículo não acha? Escolha menos de 15.";
 	} else {
-		char muitasTent[256] = "Eu já te falei... Escolhe menos de 10.";
+		char muitasTent[256] = "Eu já te falei... Escolhe menos de 15.";
 	}
-	
-
 	printf("\n");
 	escreveBonitinho(tentativasMsg, delayDefault, postDelayDefault, false);
 	scanf("%d", &tentativas);
-	if (tentativas <= 5) {
+
+
+	if (tentativas == 0) {
+		escreveBonitinho(naoEhDigito, delayDefault, postDelayDefault, true);
+		return 0;
+	}
+
+	if (tentativas < 5) {
 		escreveBonitinho(poucasTent, delayDefault, postDelayDefault, true);
-	} else if (tentativas > 5 && tentativas < 10){
+	} else if (tentativas >= 5 && tentativas < 10){
 		escreveBonitinho(medioTent, delayDefault, postDelayDefault, true);
-	}else if (tentativas >= 10) {
+	}else if (tentativas >= 15) {
 		escreveBonitinho(muitasTent, delayDefault, postDelayDefault, true);
 	}
 	return tentativas;
+}
+
+int perguntaLimite(){
+	int limite = 0;
+	char limiteMsg[256] = "Passado isso, agora você quer adivinhar um número de 0 até quanto?";
+	char inputLimite[256] = "Pode digitar: ";
+	char belezaEntao[256] = "Okay! Lembre-se do seu limite viu?";
+	char limiteNegativoMsg[256] = "Eu pensei que não precisava falar, mas acho que para você precisa... O limite tem que ser um NÚMERO POSITIVO.";
+	escreveBonitinho(limiteMsg, delayDefault, postDelayDefault, true);
+	escreveBonitinho(inputLimite, delayDefault, postDelayDefault, false);
+	scanf("%d", &limite);
+	if (limite == 0) {
+		escreveBonitinho(limiteNegativoMsg, delayDefault, postDelayDefault, true);
+		return 0;
+	}
+	return limite;
 }
 
 void jogo() {
 
 	printChave();
 
-	int numeroSecreto = rand() % 100;
-
 	char greeting1[256] = "Bem vindo ao jogo da adivinhação em C!";
 	char greeting2[256] = "Esse projeto é entediante e eu estou fazendo ele por obrigação. Então tentei deixar mais bonitinho!";
 	char greeting3[256] = "Enfim. Você tem ";
-	char greeting3Finalizacao[256] = " tentativas!";
+	char greeting3Meio[256] = " tentativas, e ";
+	char greeting3Final[256] = " como limite, boa sorte!";
 	char ganhou[256] = "Parabéns! Você ganhou!!! ";
 	char errou[256] = "Você errou... Tente novamente. \n ";
 	char perdeu[256] = "É... Você perdeu, não sei se eu esperava o contrário vido de você mas tudo bem.";
@@ -98,20 +125,42 @@ void jogo() {
 	escreveBonitinho(greeting2, delayDefault, postDelayDefault, true);
 
 	int tentativas = perguntaTentativa(false);
-	while (tentativas >= 10) {
+
+	while (tentativas >= 15 || tentativas <= 0) {
+		flush_in();
 		tentativas = perguntaTentativa(true);
 	}
 
-	char c=tentativas+'0'; // desculpa.
-	char tentativas_char[256] = {c,};
+	int limite = perguntaLimite();
+	while (limite <= 0) {
+		flush_in();
+		limite = perguntaLimite();
+	}
+
+	srand(time(NULL));
+	int numeroSecreto = rand() % limite;
+
+	char tentativas_char[256];
+	sprintf(tentativas_char, "%d", tentativas);
+
+	char limite_char[256];
+	sprintf(limite_char, "%d", limite);
+
+
 	strcat(greeting3, tentativas_char);
-	strcat(greeting3, greeting3Finalizacao);
+	strcat(greeting3, greeting3Meio);
+	strcat(greeting3, limite_char);
+	strcat(greeting3, greeting3Final);
 
 	escreveBonitinho(greeting3, delayDefault, postDelayDefault, true);
 
 	while (tentativas > 0){
 
 		int chute = pedeChute();
+		while (chute < 0){
+			flush_in();
+			chute = pedeChute();
+		}
 		bool acertou = comparaChute(chute, numeroSecreto); 
 		if (acertou) {
 			escreveBonitinho(ganhou, delayDefault, postDelayDefault, true);
