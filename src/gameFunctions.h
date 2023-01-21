@@ -64,7 +64,8 @@ int perguntaTentativa(bool jaTeFalei) {
 	char tentativasMsg[256] = "Quantas tentativas você quer ter? ";
 	char poucasTent[256] = "Só isso? Você deve ser muito bom mesmo!";
 	char medioTent[256] = "Um número bom, dificuldade média eu diria! Vamos a isto.";
-	char naoEhDigito[256] = "Você realmente tá me confundindo agora... Tenta denovo e pelo amor põe um NÚMERO POSITIVO menor que 10...";
+	char facilTent[256] = "Bem, isso definitivamente deve ser meio vergonhoso para você... Espero que escolha um limite bem alto.";
+	char naoEhDigito[256] = "Você realmente tá me confundindo agora... Tenta denovo e pelo amor põe um NÚMERO POSITIVO menor que 15...";
 	char muitasTent[256];
 	if (jaTeFalei == false){
 		char muitasTent[256] = "Pff, esse número de tentativas já é ridículo não acha? Escolha menos de 15.";
@@ -83,8 +84,10 @@ int perguntaTentativa(bool jaTeFalei) {
 
 	if (tentativas < 5) {
 		escreveBonitinho(poucasTent, delayDefault, postDelayDefault, true);
-	} else if (tentativas >= 5 && tentativas < 10){
+	} else if (tentativas >= 5 && tentativas <= 10){
 		escreveBonitinho(medioTent, delayDefault, postDelayDefault, true);
+	}else if (tentativas > 10 && tentativas < 15){
+		escreveBonitinho(facilTent, delayDefault, postDelayDefault, true);
 	}else if (tentativas >= 15) {
 		escreveBonitinho(muitasTent, delayDefault, postDelayDefault, true);
 	}

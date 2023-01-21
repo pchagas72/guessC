@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 int delayDefault = 40000; // 40000
-int postDelayDefault = 100000;
+int postDelayDefault = 500000;
 
 int strLen(char string[]){
 	int counter;
